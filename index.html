@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#111A21">
+  <title>Zapmesa | Painel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="menu-button" type="button" aria-label="Abrir menu" aria-controls="drawer" aria-expanded="false" data-drawer-open>
+          <span class="menu-icon" aria-hidden="true"><span></span><span></span><span></span></span>
+        </button>
+        <a class="brand" href="index.html" aria-label="Zapmesa, início">
+          <img class="company-logo" src="https://lbzhvqdtusfhtfhqacdu.supabase.co/storage/v1/object/public/Venua/file_00000000699c8230a655bbe6b66f03fc.png" alt="Zapmesa">
+          <span>zapmesa</span>
+        </a>
+      </div>
+      <div class="topbar-right">
+        <button class="notification-button" type="button" aria-label="Abrir notificações">
+          <span class="bell-icon" aria-hidden="true">&#128276;</span>
+          <span class="notification-dot" aria-hidden="true"></span>
+        </button>
+        <button class="profile-button" type="button" aria-label="Abrir perfil do usuário">
+          <img class="profile-image" src="https://lbzhvqdtusfhtfhqacdu.supabase.co/storage/v1/object/public/Venua/file_00000000699c8230a655bbe6b66f03fc.png" alt="Perfil do usuário">
+        </button>
+      </div>
+    </header>
+
+    <main class="main-content" aria-label="Área de trabalho">
+      <section class="connection-page" aria-labelledby="connection-title">
+        <div class="page-heading">
+          <p class="eyebrow">Automatic Bot</p>
+          <h1 id="connection-title">Conexões</h1>
+          <p class="page-description">Configure os canais que alimentam suas automações.</p>
+        </div>
+
+        <div class="connection-grid">
+          <article class="connection-card connection-card--whatsapp">
+            <div class="connection-card-header">
+              <div class="service-icon service-icon--whatsapp" aria-hidden="true">W</div>
+              <span class="connection-status"><span class="status-indicator"></span><span data-connection-status>Não conectado</span></span>
+            </div>
+            <div class="connection-card-title">
+              <h2>Conecte seu WhatsApp</h2>
+              <p>Leia o QR Code com o WhatsApp para ativar sua conexão e começar a usar as automações.</p>
+            </div>
+            <div class="connection-steps" aria-label="Passos para conectar">
+              <div class="connection-step"><span>01</span><p>Gere uma conexão segura</p></div>
+              <div class="connection-step"><span>02</span><p>Abra Dispositivos conectados</p></div>
+              <div class="connection-step"><span>03</span><p>Aponte a câmera para o código</p></div>
+            </div>
+            <button class="connection-action" type="button" data-connection-action="evolution">
+              <span class="button-mark" aria-hidden="true">+</span>
+              <span data-connection-label>Conectar WhatsApp</span>
+            </button>
+            <div class="qr-result" data-qr-result hidden>
+              <p class="qr-title">Abra o WhatsApp e escaneie este código</p>
+              <img data-qr-image alt="QR Code para conectar o WhatsApp">
+              <p class="qr-expiry">O código expira em alguns instantes.</p>
+            </div>
+          </article>
+        </div>
+
+        <div class="connection-note" role="status">
+          <span class="note-mark" aria-hidden="true">i</span>
+          <span>Sua conexão fica protegida. As credenciais da API permanecem no servidor.</span>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="drawer-backdrop" data-drawer-close></div>
+  <aside class="drawer" id="drawer" aria-label="Menu principal" aria-hidden="true">
+    <div class="drawer-brand">
+      <img class="drawer-logo" src="https://lbzhvqdtusfhtfhqacdu.supabase.co/storage/v1/object/public/Venua/ChatGPT%20Image%204%20de%20set.%20de%202026,%2015_17_41.png" alt="Ícone da empresa">
+    </div>
+    <nav class="drawer-nav" aria-label="Funções do painel">
+      <p class="drawer-section-title">Funções</p>
+      <a class="drawer-link drawer-link--active" href="#automatic-bot">
+        <span>Automatic Bot</span>
+      </a>
+    </nav>
+  </aside>
+
+  <script src="app.js"></script>
+</body>
+</html>

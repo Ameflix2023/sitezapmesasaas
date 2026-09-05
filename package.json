@@ -1,0 +1,15 @@
+{
+  "name": "zapmesa-panel",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Painel Zapmesa com Firebase no servidor",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "start:webhook": "node webhook-server.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "firebase-admin": "^12.7.0"
+  }
+}
