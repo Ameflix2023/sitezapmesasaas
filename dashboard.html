@@ -14,6 +14,10 @@
     * { box-sizing:border-box; } body { margin:0; min-width:320px; color:var(--ink); background:var(--paper); font-family:"DM Sans",sans-serif; }
     button, select { font:inherit; } button { cursor:pointer; } .shell { min-height:100vh; }
     .topbar { min-height:72px; padding:14px clamp(18px,4vw,54px); display:flex; align-items:center; justify-content:space-between; gap:20px; color:#fff; background:#1d303a; border-bottom:3px solid var(--green); }
+    .topbar-left { display:flex; align-items:center; gap:12px; }
+    .menu-button { width:34px; height:34px; display:grid; place-items:center; padding:0; border:0; color:#fff; background:transparent; }
+    .menu-icon { width:21px; height:17px; display:flex; flex-direction:column; justify-content:space-between; }
+    .menu-icon span { height:2px; width:100%; background:currentColor; }
     .brand { display:flex; align-items:center; gap:12px; color:#fff; text-decoration:none; font:600 18px "Space Grotesk",sans-serif; } .brand img { width:38px; height:38px; object-fit:contain; border:2px solid var(--green); border-radius:10px; }
     .topbar-actions { display:flex; align-items:center; gap:12px; } .back-link { color:#d7e2dd; font-size:13px; text-decoration:none; } .profile { width:38px; height:38px; border:2px solid var(--green); border-radius:50%; object-fit:cover; }
     main { width:min(100% - 32px, 1180px); margin:0 auto; padding:52px 0 80px; } .intro { display:flex; align-items:end; justify-content:space-between; gap:24px; margin-bottom:30px; } .eyebrow { margin:0 0 10px; color:#168a45; font-size:11px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; } h1 { margin:0; font:600 clamp(34px,5vw,58px)/1 "Space Grotesk",sans-serif; letter-spacing:-.05em; } .intro p { max-width:390px; margin:10px 0 0; color:var(--muted); line-height:1.5; }
@@ -22,6 +26,12 @@
     .dashboard-grid { display:grid; grid-template-columns:minmax(0,1.45fr) minmax(280px,.8fr); gap:16px; margin-top:16px; } .panel { padding:22px; border:1px solid var(--line); background:#fff; } .panel-heading { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:18px; } .panel h2 { margin:0; font:600 18px "Space Grotesk",sans-serif; } .panel-note { color:var(--muted); font-size:11px; }
     .chart-wrap { height:280px; } .top-products { display:flex; flex-direction:column; gap:18px; } .product-row { display:grid; grid-template-columns:1fr 90px; gap:12px; align-items:center; } .product-name { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:13px; font-weight:600; } .product-count { color:var(--muted); text-align:right; font-size:11px; } .bar { height:7px; margin-top:8px; overflow:hidden; border-radius:10px; background:#e6eee9; } .bar span { display:block; height:100%; border-radius:inherit; background:var(--green); }
     .orders-panel { margin-top:16px; } .table-wrap { overflow-x:auto; } table { width:100%; border-collapse:collapse; text-align:left; } th,td { padding:14px 10px; border-bottom:1px solid #edf1ef; white-space:nowrap; font-size:12px; } th { color:var(--muted); font-size:10px; letter-spacing:.08em; text-transform:uppercase; } td strong { font-weight:700; } .status { padding:6px 8px; border:1px solid var(--line); border-radius:7px; color:var(--deep); background:#f5fbf7; font-size:11px; } .empty { padding:34px 10px; color:var(--muted); text-align:center; font-size:13px; }
+    .drawer-backdrop { position:fixed; inset:0; z-index:8; background:rgba(17,26,33,.58); opacity:0; pointer-events:none; transition:opacity .2s ease; }
+    .drawer { width:min(320px, calc(100vw - 24px)); min-height:100vh; padding:0; position:fixed; top:0; left:0; z-index:9; color:#fff; background:#111a21; box-shadow:0 26px 70px rgba(17,26,33,.28); transform:translateX(-105%); transition:transform .25s ease; }
+    .drawer-brand { height:190px; background:#075e54; } .drawer-logo { width:100%; height:190px; object-fit:fill; display:block; }
+    .drawer-nav { padding:22px 24px; } .drawer-section-title { margin:0 0 12px; color:#6f7c85; font-size:11px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; }
+    .drawer-link { display:block; padding:15px 0; color:#f0f2f5; text-decoration:none; font-size:19px; font-weight:600; } .drawer-link:hover, .drawer-link--active { color:var(--green); }
+    body.drawer-open .drawer { transform:translateX(0); } body.drawer-open .drawer-backdrop { opacity:1; pointer-events:auto; }
     @media(max-width:850px) { .metrics { grid-template-columns:repeat(2,minmax(0,1fr)); } .dashboard-grid { grid-template-columns:1fr; } .intro { align-items:flex-start; flex-direction:column; } }
     @media(max-width:520px) { main { width:min(100% - 24px,1180px); padding-top:32px; } .topbar { padding:12px; } .back-link { display:none; } .metrics { gap:8px; } .metric { min-height:124px; padding:15px; } .metric strong { margin-top:20px; font-size:23px; } .panel { padding:16px; } .restaurant-picker { width:100%; } .restaurant-picker input { flex:1; min-width:0; } }
   </style>
@@ -29,7 +39,7 @@
 <body>
   <div class="shell">
     <header class="topbar">
-      <a class="brand" href="index.html"><img src="https://lbzhvqdtusfhtfhqacdu.supabase.co/storage/v1/object/public/Venua/file_00000000699c8230a655bbe6b66f03fc.png" alt="ZapMesa"><span>zapmesa</span></a>
+      <div class="topbar-left"><button id="menu-button" class="menu-button" type="button" aria-label="Abrir menu" aria-expanded="false"><span class="menu-icon"><span></span><span></span><span></span></span></button><a class="brand" href="dashboard.html"><img src="https://lbzhvqdtusfhtfhqacdu.supabase.co/storage/v1/object/public/Venua/file_00000000699c8230a655bbe6b66f03fc.png" alt="ZapMesa"><span>zapmesa</span></a></div>
       <div class="topbar-actions"><a class="back-link" href="index.html?view=connections">Painel de conexoes</a><img class="profile" src="https://lbzhvqdtusfhtfhqacdu.supabase.co/storage/v1/object/public/Venua/file_00000000699c8230a655bbe6b66f03fc.png" alt="Perfil"></div>
     </header>
     <main>
@@ -39,6 +49,15 @@
       <section class="panel orders-panel"><div class="panel-heading"><h2>Pedidos recentes</h2><span id="orders-note" class="panel-note">Atualizado agora</span></div><div class="table-wrap"><table><thead><tr><th>Cliente</th><th>Itens</th><th>Total</th><th>Data</th><th>Status</th></tr></thead><tbody id="orders-body"><tr><td colspan="5" class="empty">Carregando pedidos...</td></tr></tbody></table></div></section>
     </main>
   </div>
+  <div id="drawer-backdrop" class="drawer-backdrop"></div>
+  <aside id="drawer" class="drawer" aria-label="Menu principal">
+    <div class="drawer-brand"><img class="drawer-logo" src="https://lbzhvqdtusfhtfhqacdu.supabase.co/storage/v1/object/public/Venua/ChatGPT%20Image%204%20de%20set.%20de%202026,%2015_17_41.png" alt="Icone da empresa"></div>
+    <nav class="drawer-nav" aria-label="Funcoes do painel">
+      <p class="drawer-section-title">Funcoes</p>
+      <a class="drawer-link drawer-link--active" href="dashboard.html">Dashboard</a>
+      <a class="drawer-link" href="index.html?view=connections">Automatic Bot</a>
+    </nav>
+  </aside>
   <script>
     const query = new URLSearchParams(window.location.search);
     const restaurantInput = document.querySelector('#restaurant-id');
@@ -48,6 +67,12 @@
     const money = (value) => Number(value || 0).toLocaleString('pt-BR', { style:'currency', currency:'BRL' });
     const dateTime = (value) => new Date(value).toLocaleString('pt-BR', { dateStyle:'short', timeStyle:'short' });
     const statusLabels = { new:'Novo', preparing:'Em preparo', completed:'Concluido', cancelled:'Cancelado' };
+    const menuButton = document.querySelector('#menu-button');
+    const drawer = document.querySelector('#drawer');
+    const drawerBackdrop = document.querySelector('#drawer-backdrop');
+    function setDrawerState(open) { document.body.classList.toggle('drawer-open', open); menuButton.setAttribute('aria-expanded', String(open)); }
+    menuButton.addEventListener('click', () => setDrawerState(true));
+    drawerBackdrop.addEventListener('click', () => setDrawerState(false));
     function renderChart(dailyRevenue) {
       const days = Object.keys(dailyRevenue).sort();
       const labels = days.length ? days.map((day) => day.slice(8,10)) : ['Sem dados'];
