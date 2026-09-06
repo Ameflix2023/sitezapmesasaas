@@ -115,10 +115,16 @@ const server = http.createServer(async (request, response) => {
     }
 
     try {
-      const snapshot = await database.ref(`restaurants/${restaurantId}/products`).once('value');
-      const productsData = snapshot.val() || {};
+      const snapshot = await database.ref(`restaurants/${restaurantId}`).once('value');
+      const restaurantData = snapshot.val() || {};
+      const productsData = restaurantData.products || {};
       const products = Object.entries(productsData).map(([id, product]) => ({ id, ...product }));
-      sendJson(response, 200, { ok: true, restaurantName: 'Seu restaurante', products });
+      sendJson(response, 200, {
+        ok: true,
+        restaurantName: restaurantData.name || restaurantData.profileName || 'Seu restaurante',
+        whatsapp: restaurantData.whatsapp || '',
+        products
+      });
     } catch (error) {
       sendJson(response, 503, { ok: false, error: 'Nao foi possivel carregar o cardapio.' });
     }

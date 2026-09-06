@@ -3,87 +3,109 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#17251f">
-  <title>Cardapio | ZapMesa</title>
+  <title>Cardapio Digital</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
   <style>
-    :root { --ink: #17251f; --muted: #68756e; --paper: #f5f4ee; --accent: #e9b949; --green: #1f694b; --line: #dfe3da; }
-    * { box-sizing: border-box; }
-    body { margin: 0; min-width: 320px; color: var(--ink); background: var(--paper); font-family: Georgia, 'Times New Roman', serif; }
-    .store-shell { max-width: 1120px; margin: 0 auto; padding: 28px 22px 70px; }
-    .store-header { min-height: 250px; padding: 34px clamp(22px, 6vw, 70px); display: flex; align-items: flex-end; justify-content: space-between; gap: 28px; color: #fff; background: var(--ink); overflow: hidden; position: relative; }
-    .store-header::after { width: 230px; height: 230px; content: ''; position: absolute; right: -55px; top: -80px; border: 1px solid rgba(233,185,73,.6); border-radius: 50%; box-shadow: 0 0 0 24px rgba(233,185,73,.08), 0 0 0 48px rgba(233,185,73,.05); }
-    .kicker { margin: 0 0 15px; color: var(--accent); font: 700 11px Arial, sans-serif; letter-spacing: .18em; text-transform: uppercase; }
-    h1 { max-width: 650px; margin: 0; font-size: clamp(40px, 7vw, 76px); line-height: .92; font-weight: 400; letter-spacing: -.04em; }
-    .header-note { max-width: 180px; margin: 0; color: #d2dbd3; font: 13px/1.5 Arial, sans-serif; position: relative; z-index: 1; }
-    .store-toolbar { padding: 28px 0 18px; display: flex; align-items: center; justify-content: space-between; gap: 16px; border-bottom: 1px solid var(--line); }
-    .store-toolbar h2 { margin: 0; font-size: 26px; font-weight: 400; }
-    .store-count { color: var(--muted); font: 12px Arial, sans-serif; }
-    .products { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; padding-top: 24px; }
-    .product { display: flex; flex-direction: column; min-height: 330px; background: #fff; border: 1px solid var(--line); }
-    .product-image { width: 100%; height: 170px; display: block; object-fit: cover; background: #e8ebe4; }
-    .product-body { padding: 19px; display: flex; flex: 1; flex-direction: column; }
-    .product-category { margin: 0 0 8px; color: var(--green); font: 700 10px Arial, sans-serif; letter-spacing: .13em; text-transform: uppercase; }
-    .product h3 { margin: 0; font-size: 23px; line-height: 1.05; font-weight: 400; }
-    .product-description { margin: 10px 0 18px; color: var(--muted); font: 13px/1.5 Arial, sans-serif; }
-    .product-footer { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: auto; }
-    .price { color: var(--green); font: 700 17px Arial, sans-serif; }
-    .order-link { padding: 10px 12px; color: var(--ink); background: var(--accent); font: 700 11px Arial, sans-serif; text-decoration: none; }
-    .state { padding: 70px 20px; color: var(--muted); text-align: center; font: 14px Arial, sans-serif; }
-    .state strong { display: block; margin-bottom: 8px; color: var(--ink); font: 24px Georgia, serif; }
-    footer { padding-top: 46px; color: var(--muted); text-align: center; font: 11px Arial, sans-serif; }
-    @media (max-width: 760px) { .store-shell { padding: 12px 14px 48px; } .store-header { min-height: 300px; flex-direction: column; align-items: flex-start; justify-content: flex-end; } .header-note { max-width: 245px; } .products { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-    @media (max-width: 480px) { .products { grid-template-columns: 1fr; } .product { min-height: 0; } .product-image { height: 210px; } }
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background: #0b0f17; }
+    .glass-card { background: rgba(17, 24, 39, .75); backdrop-filter: blur(8px); border: 1px solid rgba(255, 255, 255, .08); }
   </style>
 </head>
-<body>
-  <main class="store-shell">
-    <header class="store-header">
-      <div><p class="kicker">Cardapio online</p><h1 id="store-name">Seu restaurante</h1></div>
-      <p class="header-note">Escolha seus favoritos e fale com a nossa equipe pelo WhatsApp.</p>
-    </header>
-    <div class="store-toolbar"><h2>O que vai ser hoje?</h2><span class="store-count" id="store-count"></span></div>
-    <section class="products" id="products" aria-live="polite"><div class="state"><strong>Carregando cardapio</strong>Um instante.</div></section>
-    <footer>Cardapio digital powered by ZapMesa</footer>
-  </main>
-  <script>
-    const query = new URLSearchParams(window.location.search);
-    const restaurantId = query.get('restaurant');
-    const productsElement = document.querySelector('#products');
-    const storeNameElement = document.querySelector('#store-name');
-    const countElement = document.querySelector('#store-count');
-    const fallbackImage = 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=900&q=80';
+<body class="text-slate-100 antialiased min-h-screen pb-28">
+  <header class="sticky top-0 z-30 bg-slate-900/90 backdrop-blur-md border-b border-slate-800">
+    <div class="max-w-xl mx-auto px-4 py-4 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-2xl overflow-hidden border border-rose-500/20 bg-slate-950 flex items-center justify-center shadow-lg shadow-rose-500/10"><img src="https://lbzhvqdtusfhtfhqacdu.supabase.co/storage/v1/object/public/Venua/file_00000000699c8230a655bbe6b66f03fc.png" alt="Logo" class="w-full h-full object-cover"></div>
+        <div><h1 id="store-name" class="text-sm font-black text-white">Carregando...</h1><p class="text-[10px] text-slate-400">Faca seu pedido online</p></div>
+      </div>
+      <button type="button" data-open-cart aria-label="Abrir sacola" class="relative p-2.5 rounded-2xl bg-slate-800/80 border border-slate-700/60 text-slate-200 hover:text-white transition"><i data-lucide="shopping-bag" class="w-5 h-5"></i><span id="badge-count" class="absolute -top-1.5 -right-1.5 bg-rose-600 text-white text-[10px] font-black w-5 h-5 rounded-full flex items-center justify-center shadow-md hidden">0</span></button>
+    </div>
+  </header>
 
-    function money(value) { return Number(value || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); }
-    function escapeHtml(value) { return String(value || '').replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[char])); }
+  <main id="store-container" class="max-w-xl mx-auto px-4 py-6 space-y-6">
+    <div id="categories-filter" class="flex gap-2 overflow-x-auto pb-2"></div>
+    <div id="products-grid" class="grid grid-cols-1 gap-4" aria-live="polite"><div class="text-center py-20 text-slate-500 font-bold text-sm">Carregando cardapio...</div></div>
+  </main>
+
+  <div id="cart-bar" class="fixed bottom-0 left-0 right-0 p-4 bg-slate-900/95 backdrop-blur-lg border-t border-slate-800 z-40 hidden"><div class="max-w-xl mx-auto flex items-center justify-between"><div><span id="cart-count" class="text-[10px] bg-rose-500 text-white px-2 py-0.5 rounded-full font-bold">0 itens</span><p id="cart-total" class="text-sm font-black text-white mt-0.5">R$ 0,00</p></div><button type="button" data-open-cart class="bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-3 rounded-2xl text-xs font-extrabold shadow-lg shadow-emerald-600/30 flex items-center space-x-2 transition"><i data-lucide="shopping-bag" class="w-4 h-4"></i><span>Ver Sacola</span></button></div></div>
+
+  <div id="checkout-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden items-center justify-center p-4"><div class="glass-card w-full max-w-md rounded-3xl p-6 space-y-5 relative"><div class="flex items-center justify-between border-b border-slate-800 pb-3"><h2 class="font-extrabold text-sm text-white">Sua Sacola de Pedidos</h2><button type="button" data-close-cart aria-label="Fechar sacola" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button></div><div id="modal-cart-items" class="max-h-48 overflow-y-auto space-y-2 pr-1"></div><div class="space-y-3 pt-2 border-t border-slate-800"><div><label for="client-name" class="block text-xs font-extrabold text-slate-300 mb-1">Seu Nome</label><input id="client-name" type="text" placeholder="Ex: Joao Silva" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none"></div><div><label for="client-address" class="block text-xs font-extrabold text-slate-300 mb-1">Endereco de Entrega</label><textarea id="client-address" rows="2" placeholder="Rua, numero, bairro..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none"></textarea></div></div><button type="button" data-send-order class="w-full bg-emerald-600 hover:bg-emerald-500 text-white py-3.5 rounded-2xl text-xs font-extrabold shadow-lg flex items-center justify-center space-x-2"><i data-lucide="send" class="w-4 h-4"></i><span>Enviar Pedido via WhatsApp</span></button></div></div>
+
+  <script>
+    const restaurantId = new URLSearchParams(window.location.search).get('restaurant');
+    const fallbackImage = 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=900&q=80';
+    const storeData = { name: 'Cardapio Digital', whatsapp: '', products: [] };
+    let cart = [];
+    let activeCategory = 'todos';
+    const money = (value) => Number(value || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    const escapeHtml = (value) => String(value || '').replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[char]));
+
+    function renderCategories() {
+      const categories = ['todos', ...new Set(storeData.products.map((product) => product.category).filter(Boolean))];
+      document.querySelector('#categories-filter').innerHTML = categories.map((category) => `<button type="button" data-category="${escapeHtml(category)}" class="category-button px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap ${category === activeCategory ? 'bg-rose-600 text-white shadow' : 'bg-slate-900 border border-slate-800 text-slate-300'}">${category === 'todos' ? 'Todos' : escapeHtml(category)}</button>`).join('');
+    }
+
+    function renderProducts() {
+      const products = activeCategory === 'todos' ? storeData.products : storeData.products.filter((product) => product.category === activeCategory);
+      const grid = document.querySelector('#products-grid');
+      if (!products.length) { grid.innerHTML = '<div class="text-center py-12 text-xs text-slate-500 font-bold">Nenhum produto cadastrado neste cardapio.</div>'; return; }
+      grid.innerHTML = products.map((product) => `<article class="glass-card rounded-2xl p-4 flex gap-4 items-center"><img src="${escapeHtml(product.image || fallbackImage)}" alt="${escapeHtml(product.name)}" class="w-20 h-20 rounded-xl object-cover border border-slate-800" loading="lazy"><div class="flex-1 min-w-0"><span class="text-[10px] bg-rose-500/20 text-rose-400 px-2 py-0.5 rounded-full font-bold">${escapeHtml(product.category || 'Geral')}</span><h3 class="text-xs font-bold text-white truncate mt-1">${escapeHtml(product.name || 'Produto')}</h3><p class="text-[11px] text-slate-400 line-clamp-1 mt-0.5">${escapeHtml(product.description)}</p><p class="text-xs text-emerald-400 font-extrabold mt-1">${money(product.price)}</p></div><button type="button" data-add-product="${escapeHtml(product.id)}" aria-label="Adicionar ${escapeHtml(product.name)}" class="bg-rose-600 hover:bg-rose-500 text-white p-2.5 rounded-xl shadow transition"><i data-lucide="plus" class="w-4 h-4"></i></button></article>`).join('');
+      lucide.createIcons();
+    }
+
+    function updateCart() {
+      const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+      const totalPrice = cart.reduce((sum, item) => sum + Number(item.price || 0) * item.quantity, 0);
+      document.querySelector('#cart-bar').classList.toggle('hidden', totalItems === 0);
+      document.querySelector('#badge-count').classList.toggle('hidden', totalItems === 0);
+      document.querySelector('#badge-count').textContent = totalItems;
+      document.querySelector('#cart-count').textContent = `${totalItems} ${totalItems === 1 ? 'item' : 'itens'}`;
+      document.querySelector('#cart-total').textContent = money(totalPrice);
+      document.querySelector('#modal-cart-items').innerHTML = cart.length ? cart.map((item) => `<div class="flex items-center justify-between bg-slate-950 p-2.5 rounded-xl border border-slate-800"><div><p class="text-xs font-bold text-white">${escapeHtml(item.name)}</p><p class="text-[10px] text-emerald-400">${item.quantity}x ${money(item.price)}</p></div><button type="button" data-remove-product="${escapeHtml(item.id)}" class="text-rose-400 hover:text-rose-300 text-xs font-bold px-2 py-1">Remover</button></div>`).join('') : '<p class="text-xs text-slate-500 text-center py-4">Sua sacola esta vazia.</p>';
+    }
+
+    function openCart() { if (!cart.length) { alert('Adicione pelo menos um item a sacola antes de finalizar.'); return; } document.querySelector('#checkout-modal').classList.remove('hidden'); document.querySelector('#checkout-modal').classList.add('flex'); updateCart(); }
+    function closeCart() { document.querySelector('#checkout-modal').classList.add('hidden'); document.querySelector('#checkout-modal').classList.remove('flex'); }
+    function sendOrder() {
+      const name = document.querySelector('#client-name').value.trim();
+      const address = document.querySelector('#client-address').value.trim();
+      if (!name || !address) { alert('Por favor, preencha seu nome e endereco de entrega.'); return; }
+      if (!storeData.whatsapp) { alert('Este restaurante ainda nao configurou o WhatsApp.'); return; }
+      const items = cart.map((item) => `- ${item.quantity}x ${item.name} - ${money(Number(item.price || 0) * item.quantity)}`).join('\n');
+      const total = cart.reduce((sum, item) => sum + Number(item.price || 0) * item.quantity, 0);
+      const text = `*NOVO PEDIDO - ${storeData.name}*\n\n*Cliente:* ${name}\n*Endereco:* ${address}\n\n*Itens:*\n${items}\n\n*Total:* ${money(total)}`;
+      window.open(`https://wa.me/${storeData.whatsapp.replace(/\D/g, '')}?text=${encodeURIComponent(text)}`, '_blank', 'noopener');
+    }
+
+    document.addEventListener('click', (event) => {
+      const categoryButton = event.target.closest('[data-category]');
+      const addButton = event.target.closest('[data-add-product]');
+      const removeButton = event.target.closest('[data-remove-product]');
+      if (categoryButton) { activeCategory = categoryButton.dataset.category; renderCategories(); renderProducts(); }
+      if (addButton) { const product = storeData.products.find((item) => item.id === addButton.dataset.addProduct); if (!product) return; const existing = cart.find((item) => item.id === product.id); if (existing) existing.quantity += 1; else cart.push({ ...product, quantity: 1 }); updateCart(); }
+      if (removeButton) { cart = cart.filter((item) => item.id !== removeButton.dataset.removeProduct); updateCart(); }
+    });
+    document.querySelectorAll('[data-open-cart]').forEach((button) => button.addEventListener('click', openCart));
+    document.querySelector('[data-close-cart]').addEventListener('click', closeCart);
+    document.querySelector('[data-send-order]').addEventListener('click', sendOrder);
+    lucide.createIcons();
 
     async function loadStore() {
-      if (!restaurantId) {
-        productsElement.innerHTML = '<div class="state"><strong>Loja indisponivel</strong>Este link nao informou o restaurante.</div>';
-        return;
-      }
+      if (!restaurantId) { document.querySelector('#products-grid').innerHTML = '<div class="text-center py-20 text-slate-500 font-bold text-sm">Informe o restaurante no link da loja.</div>'; return; }
       try {
         const response = await fetch(`/api/store?restaurant=${encodeURIComponent(restaurantId)}`);
         const result = await response.json();
-        if (!response.ok || !result.ok) throw new Error(result.error);
-        storeNameElement.textContent = result.restaurantName || 'Seu restaurante';
-        const products = result.products || [];
-        countElement.textContent = `${products.length} ${products.length === 1 ? 'item' : 'itens'}`;
-        if (!products.length) {
-          productsElement.innerHTML = '<div class="state"><strong>Cardapio em preparo</strong>Em breve teremos novidades por aqui.</div>';
-          return;
-        }
-        productsElement.innerHTML = products.map((product) => `
-          <article class="product">
-            <img class="product-image" src="${escapeHtml(product.image || fallbackImage)}" alt="${escapeHtml(product.name)}" loading="lazy">
-            <div class="product-body">
-              <p class="product-category">${escapeHtml(product.category || 'Especial')}</p>
-              <h3>${escapeHtml(product.name || 'Produto')}</h3>
-              ${product.description ? `<p class="product-description">${escapeHtml(product.description)}</p>` : ''}
-              <div class="product-footer"><strong class="price">${money(product.price)}</strong><a class="order-link" href="https://wa.me/?text=${encodeURIComponent(`Ola! Quero pedir: ${product.name}`)}" target="_blank" rel="noreferrer">Pedir</a></div>
-            </div>
-          </article>`).join('');
+        if (!response.ok || !result.ok) throw new Error(result.error || 'Falha ao carregar');
+        storeData.name = result.restaurantName || storeData.name;
+        storeData.whatsapp = result.whatsapp || '';
+        storeData.products = result.products || [];
+        document.querySelector('#store-name').textContent = storeData.name;
+        document.title = `${storeData.name} - Cardapio`;
+        renderCategories();
+        renderProducts();
       } catch {
-        productsElement.innerHTML = '<div class="state"><strong>Nao foi possivel carregar</strong>Tente abrir este link novamente.</div>';
+        document.querySelector('#products-grid').innerHTML = '<div class="text-center py-20 text-slate-500 font-bold text-sm">Nao foi possivel carregar o cardapio.</div>';
       }
     }
     loadStore();
