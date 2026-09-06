@@ -11,6 +11,7 @@ const publicFiles = {
   '/': { file: 'index.html', type: 'text/html; charset=utf-8' },
   '/index.html': { file: 'index.html', type: 'text/html; charset=utf-8' },
   '/loja.html': { file: 'loja.html', type: 'text/html; charset=utf-8' },
+  '/dashboard.html': { file: 'dashboard.html', type: 'text/html; charset=utf-8' },
   '/styles.css': { file: 'styles.css', type: 'text/css; charset=utf-8' },
   '/app.js': { file: 'app.js', type: 'application/javascript; charset=utf-8' }
 };
@@ -89,6 +90,47 @@ function readJsonBody(request) {
   });
 }
 
+function getOrderSummary(ordersData) {
+  const orders = Object.entries(ordersData || {}).map(([id, order]) => ({ id, ...order }));
+  const now = new Date();
+  const todayKey = now.toISOString().slice(0, 10);
+  const weekStart = new Date(now);
+  weekStart.setHours(0, 0, 0, 0);
+  weekStart.setDate(weekStart.getDate() - weekStart.getDay());
+  const monthKey = todayKey.slice(0, 7);
+  const monthDays = {};
+  const products = {};
+  let todayRevenue = 0;
+  let weekRevenue = 0;
+  let monthRevenue = 0;
+
+  orders.forEach((order) => {
+    const createdAt = new Date(order.createdAt || 0);
+    const total = Number(order.total || 0);
+    const orderDate = createdAt.toISOString().slice(0, 10);
+    if (orderDate === todayKey) todayRevenue += total;
+    if (createdAt >= weekStart) weekRevenue += total;
+    if (orderDate.slice(0, 7) === monthKey) {
+      monthRevenue += total;
+      monthDays[orderDate] = (monthDays[orderDate] || 0) + total;
+    }
+    (order.items || []).forEach((item) => {
+      const name = item.name || 'Produto';
+      products[name] = (products[name] || 0) + Number(item.quantity || 0);
+    });
+  });
+
+  return {
+    orders,
+    totals: { todayRevenue, weekRevenue, monthRevenue, orderCount: orders.length },
+    dailyRevenue: monthDays,
+    topProducts: Object.entries(products)
+      .map(([name, quantity]) => ({ name, quantity }))
+      .sort((left, right) => right.quantity - left.quantity)
+      .slice(0, 5)
+  };
+}
+
 const server = http.createServer(async (request, response) => {
   const requestPath = new URL(request.url, `http://${request.headers.host}`).pathname;
 
@@ -127,6 +169,77 @@ const server = http.createServer(async (request, response) => {
       });
     } catch (error) {
       sendJson(response, 503, { ok: false, error: 'Nao foi possivel carregar o cardapio.' });
+    }
+    return;
+  }
+
+  if (request.method === 'GET' && requestPath === '/api/dashboard') {
+    const restaurantId = new URL(request.url, `http://${request.headers.host}`).searchParams.get('restaurant');
+    if (!database || !restaurantId || !/^[A-Za-z0-9_-]+$/.test(restaurantId)) {
+      sendJson(response, 400, { ok: false, error: 'Restaurante invalido.' });
+      return;
+    }
+
+    try {
+      const snapshot = await database.ref(`restaurants/${restaurantId}`).once('value');
+      const restaurantData = snapshot.val() || {};
+      sendJson(response, 200, {
+        ok: true,
+        restaurantName: restaurantData.name || restaurantData.profileName || 'Seu restaurante',
+        products: Object.entries(restaurantData.products || {}).map(([id, product]) => ({ id, ...product })),
+        ...getOrderSummary(restaurantData.orders)
+      });
+    } catch (error) {
+      sendJson(response, 503, { ok: false, error: 'Nao foi possivel carregar o dashboard.' });
+    }
+    return;
+  }
+
+  if (request.method === 'POST' && requestPath === '/api/orders') {
+    try {
+      const payload = await readJsonBody(request);
+      const { restaurantId, customerName, address, items } = payload;
+      if (!database || !restaurantId || !/^[A-Za-z0-9_-]+$/.test(restaurantId) || !customerName || !address || !Array.isArray(items) || !items.length) {
+        sendJson(response, 400, { ok: false, error: 'Dados do pedido incompletos.' });
+        return;
+      }
+
+      const normalizedItems = items.map((item) => ({
+        name: String(item.name || 'Produto').slice(0, 120),
+        quantity: Math.max(1, Number(item.quantity || 1)),
+        price: Number(item.price || 0)
+      }));
+      const total = normalizedItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+      const orderRef = database.ref(`restaurants/${restaurantId}/orders`).push();
+      await orderRef.set({
+        customerName: String(customerName).slice(0, 120),
+        address: String(address).slice(0, 300),
+        items: normalizedItems,
+        total,
+        status: 'new',
+        createdAt: new Date().toISOString()
+      });
+      sendJson(response, 201, { ok: true, orderId: orderRef.key, total });
+    } catch (error) {
+      sendJson(response, 503, { ok: false, error: 'Nao foi possivel salvar o pedido.' });
+    }
+    return;
+  }
+
+  const orderStatusMatch = requestPath.match(/^\/api\/orders\/([^/]+)$/);
+  if (request.method === 'PATCH' && orderStatusMatch) {
+    try {
+      const payload = await readJsonBody(request);
+      const { restaurantId, status } = payload;
+      const allowedStatuses = ['new', 'preparing', 'completed', 'cancelled'];
+      if (!database || !restaurantId || !/^[A-Za-z0-9_-]+$/.test(restaurantId) || !allowedStatuses.includes(status)) {
+        sendJson(response, 400, { ok: false, error: 'Status ou restaurante invalido.' });
+        return;
+      }
+      await database.ref(`restaurants/${restaurantId}/orders/${orderStatusMatch[1]}`).update({ status });
+      sendJson(response, 200, { ok: true });
+    } catch (error) {
+      sendJson(response, 503, { ok: false, error: 'Nao foi possivel atualizar o pedido.' });
     }
     return;
   }

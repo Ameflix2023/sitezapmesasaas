@@ -84,15 +84,32 @@
 
     function openCart() { if (!cart.length) { alert('Adicione pelo menos um item a sacola antes de finalizar.'); return; } document.querySelector('#checkout-modal').classList.remove('hidden'); document.querySelector('#checkout-modal').classList.add('flex'); updateCart(); }
     function closeCart() { document.querySelector('#checkout-modal').classList.add('hidden'); document.querySelector('#checkout-modal').classList.remove('flex'); }
-    function sendOrder() {
+    async function sendOrder() {
       const name = document.querySelector('#client-name').value.trim();
       const address = document.querySelector('#client-address').value.trim();
       if (!name || !address) { alert('Por favor, preencha seu nome e endereco de entrega.'); return; }
       if (!storeData.whatsapp) { alert('Este restaurante ainda nao configurou o WhatsApp.'); return; }
+      const orderButton = document.querySelector('[data-send-order]');
+      orderButton.disabled = true;
+      orderButton.classList.add('opacity-60');
       const items = cart.map((item) => `- ${item.quantity}x ${item.name} - ${money(Number(item.price || 0) * item.quantity)}`).join('\n');
       const total = cart.reduce((sum, item) => sum + Number(item.price || 0) * item.quantity, 0);
       const text = `*NOVO PEDIDO - ${storeData.name}*\n\n*Cliente:* ${name}\n*Endereco:* ${address}\n\n*Itens:*\n${items}\n\n*Total:* ${money(total)}`;
-      window.open(`https://wa.me/${storeData.whatsapp.replace(/\D/g, '')}?text=${encodeURIComponent(text)}`, '_blank', 'noopener');
+      try {
+        const response = await fetch('/api/orders', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ restaurantId, customerName: name, address, items: cart })
+        });
+        const result = await response.json();
+        if (!response.ok || !result.ok) throw new Error(result.error || 'Nao foi possivel registrar o pedido.');
+        window.open(`https://wa.me/${storeData.whatsapp.replace(/\D/g, '')}?text=${encodeURIComponent(text)}`, '_blank', 'noopener');
+      } catch (error) {
+        alert(error.message);
+      } finally {
+        orderButton.disabled = false;
+        orderButton.classList.remove('opacity-60');
+      }
     }
 
     document.addEventListener('click', (event) => {
