@@ -7,6 +7,7 @@ const admin = require('firebase-admin');
 const { createEvolutionInstance, getEvolutionInstanceState, deleteEvolutionInstance, sendEvolutionText } = require('./evolution-server');
 
 const port = Number(process.env.PORT || 3000);
+const defaultRestaurantId = process.env.STORE_RESTAURANT_ID || '';
 const publicFiles = {
   '/': { file: 'index.html', type: 'text/html; charset=utf-8' },
   '/index.html': { file: 'index.html', type: 'text/html; charset=utf-8' },
@@ -146,6 +147,11 @@ const server = http.createServer(async (request, response) => {
     } catch (error) {
       sendJson(response, 503, { connected: false, configured: true });
     }
+    return;
+  }
+
+  if (request.method === 'GET' && requestPath === '/api/config') {
+    sendJson(response, 200, { ok: true, defaultRestaurantId });
     return;
   }
 

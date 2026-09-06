@@ -30,7 +30,7 @@
   <div class="shell">
     <header class="topbar">
       <a class="brand" href="index.html"><img src="https://lbzhvqdtusfhtfhqacdu.supabase.co/storage/v1/object/public/Venua/file_00000000699c8230a655bbe6b66f03fc.png" alt="ZapMesa"><span>zapmesa</span></a>
-      <div class="topbar-actions"><a class="back-link" href="index.html">Painel de conexoes</a><img class="profile" src="https://lbzhvqdtusfhtfhqacdu.supabase.co/storage/v1/object/public/Venua/file_00000000699c8230a655bbe6b66f03fc.png" alt="Perfil"></div>
+      <div class="topbar-actions"><a class="back-link" href="index.html?view=connections">Painel de conexoes</a><img class="profile" src="https://lbzhvqdtusfhtfhqacdu.supabase.co/storage/v1/object/public/Venua/file_00000000699c8230a655bbe6b66f03fc.png" alt="Perfil"></div>
     </header>
     <main>
       <section class="intro"><div><p class="eyebrow">Visao geral</p><h1 id="restaurant-name">Dashboard</h1><p>Acompanhe o desempenho do restaurante e gerencie os pedidos recebidos.</p></div><label class="restaurant-picker">ID do restaurante <input id="restaurant-id" type="text" placeholder="ex: restaurante-01"></label></section>
@@ -42,7 +42,7 @@
   <script>
     const query = new URLSearchParams(window.location.search);
     const restaurantInput = document.querySelector('#restaurant-id');
-    const restaurantId = query.get('restaurant') || localStorage.getItem('zapmesa-restaurant-id') || '';
+    let restaurantId = query.get('restaurant') || localStorage.getItem('zapmesa-restaurant-id') || '';
     let chart;
     restaurantInput.value = restaurantId;
     const money = (value) => Number(value || 0).toLocaleString('pt-BR', { style:'currency', currency:'BRL' });
@@ -64,7 +64,13 @@
       body.innerHTML = orders.length ? orders.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0,12).map((order) => `<tr><td><strong>${order.customerName || 'Cliente'}</strong></td><td>${(order.items || []).reduce((sum,item) => sum + Number(item.quantity || 0), 0)} itens</td><td>${money(order.total)}</td><td>${dateTime(order.createdAt)}</td><td><select class="status" data-order-id="${order.id}">${Object.entries(statusLabels).map(([value,label]) => `<option value="${value}" ${order.status === value ? 'selected' : ''}>${label}</option>`).join('')}</select></td></tr>`).join('') : '<tr><td colspan="5" class="empty">Ainda nao ha pedidos registrados.</td></tr>';
     }
     async function loadDashboard() {
-      if (!restaurantId) { document.querySelector('#orders-body').innerHTML = '<tr><td colspan="5" class="empty">Informe o ID do restaurante na URL ou no campo acima.</td></tr>'; renderChart({}); renderTopProducts([]); return; }
+      if (!restaurantId) {
+        const configResponse = await fetch('/api/config');
+        const config = await configResponse.json();
+        restaurantId = config.defaultRestaurantId || '';
+        restaurantInput.value = restaurantId;
+      }
+      if (!restaurantId) { document.querySelector('#orders-body').innerHTML = '<tr><td colspan="5" class="empty">Configure STORE_RESTAURANT_ID no .env para carregar o restaurante.</td></tr>'; renderChart({}); renderTopProducts([]); return; }
       localStorage.setItem('zapmesa-restaurant-id', restaurantId);
       const response = await fetch(`/api/dashboard?restaurant=${encodeURIComponent(restaurantId)}`);
       const result = await response.json();
