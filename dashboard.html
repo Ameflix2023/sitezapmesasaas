@@ -55,7 +55,7 @@
     <nav class="drawer-nav" aria-label="Funcoes do painel">
       <p class="drawer-section-title">Funcoes</p>
       <a class="drawer-link drawer-link--active" href="dashboard.html" data-dashboard-link>Dashboard</a>
-      <a class="drawer-link" href="index.html?view=connections">Automatic Bot</a>
+      <a class="drawer-link" href="index.html?view=connections" data-connections-link>Automatic Bot</a>
     </nav>
   </aside>
   <script>
@@ -75,6 +75,7 @@
     drawerBackdrop.addEventListener('click', () => setDrawerState(false));
     document.querySelectorAll('.drawer-link').forEach((link) => link.addEventListener('click', () => setDrawerState(false)));
     document.querySelectorAll('[data-dashboard-link]').forEach((link) => link.addEventListener('click', (event) => { event.preventDefault(); setDrawerState(false); window.location.assign(link.getAttribute('href')); }));
+    document.querySelectorAll('[data-connections-link]').forEach((link) => link.addEventListener('click', (event) => { event.preventDefault(); setDrawerState(false); window.location.assign(link.getAttribute('href')); }));
     function renderChart(dailyRevenue) {
       const days = Object.keys(dailyRevenue).sort();
       const labels = days.length ? days.map((day) => day.slice(8,10)) : ['Sem dados'];
