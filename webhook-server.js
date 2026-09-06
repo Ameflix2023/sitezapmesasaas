@@ -5,8 +5,8 @@ const { sendEvolutionText } = require('./evolution-server');
 
 const webhookPort = Number(process.env.WEBHOOK_PORT || 3001);
 const autoReplyEnabled = process.env.AUTO_REPLY_ENABLED !== 'false';
-const mistralApiKey = process.env.MISTRAL_API_KEY;
-const mistralModel = process.env.MISTRAL_MODEL || 'mistral-small-latest';
+const geminiApiKey = process.env.GEMINI_API_KEY;
+const geminiModel = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
 const storePublicUrl = (process.env.STORE_PUBLIC_URL || '').replace(/\/+$/, '');
 const storeRestaurantId = process.env.STORE_RESTAURANT_ID || '';
 
@@ -63,9 +63,9 @@ function getIncomingMessage(payload) {
   };
 }
 
-async function generateMistralReply(messageText) {
-  if (!mistralApiKey) {
-    throw new Error('MISTRAL_API_KEY nao configurada.');
+async function generateGeminiReply(messageText) {
+  if (!geminiApiKey) {
+    throw new Error('GEMINI_API_KEY nao configurada.');
   }
 
   const storeLink = storePublicUrl && storeRestaurantId
@@ -74,23 +74,25 @@ async function generateMistralReply(messageText) {
   const systemPrompt = 'Voce e o atendente virtual de um restaurante. Responda em portugues do Brasil, de forma cordial, objetiva e natural. Nao invente precos, produtos ou horarios. Quando nao souber, diga que vai encaminhar para a equipe.'
     + (storeLink ? ` Quando o cliente pedir cardapio, menu ou produtos, envie este link: ${storeLink}` : '');
 
-  const response = await fetch('https://api.mistral.ai/v1/chat/completions', {
+  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(geminiModel)}:generateContent`;
+  const response = await fetch(endpoint, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${mistralApiKey}`
+      'x-goog-api-key': geminiApiKey
     },
     body: JSON.stringify({
-      model: mistralModel,
-      temperature: 0.4,
-      max_tokens: 300,
-      messages: [
-        {
-          role: 'system',
-          content: systemPrompt
-        },
-        { role: 'user', content: messageText }
-      ]
+      systemInstruction: {
+        parts: [{ text: systemPrompt }]
+      },
+      contents: [{
+        role: 'user',
+        parts: [{ text: messageText }]
+      }],
+      generationConfig: {
+        temperature: 0.4,
+        maxOutputTokens: 300
+      }
     })
   });
   const responseText = await response.text();
@@ -103,14 +105,17 @@ async function generateMistralReply(messageText) {
   }
 
   if (!response.ok) {
-    const error = new Error(responseData.message || responseData.error?.message || 'A Mistral recusou a solicitacao.');
+    const error = new Error(responseData.error?.message || responseData.message || 'O Gemini recusou a solicitacao.');
     error.statusCode = response.status;
     throw error;
   }
 
-  const reply = responseData.choices?.[0]?.message?.content?.trim();
+  const reply = responseData.candidates?.[0]?.content?.parts
+    ?.map((part) => part.text || '')
+    .join('')
+    .trim();
   if (!reply) {
-    throw new Error('A Mistral nao retornou uma resposta.');
+    throw new Error('O Gemini nao retornou uma resposta.');
   }
 
   return reply;
@@ -139,15 +144,15 @@ const webhookServer = http.createServer(async (request, response) => {
 
       if (autoReplyEnabled && incomingMessage?.instanceName) {
         try {
-          const reply = await generateMistralReply(incomingMessage.text);
+          const reply = await generateGeminiReply(incomingMessage.text);
           await sendEvolutionText(
             incomingMessage.instanceName,
             incomingMessage.number,
             reply
           );
-          console.log(`Resposta da Mistral enviada para ${incomingMessage.number}.`);
+          console.log(`Resposta do Gemini enviada para ${incomingMessage.number}.`);
         } catch (error) {
-          console.error(`Falha ao gerar resposta da Mistral: ${error.message}`);
+          console.error(`Falha ao gerar resposta do Gemini: ${error.message}`);
         }
       }
 
