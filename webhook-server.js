@@ -6,7 +6,7 @@ const { sendEvolutionText } = require('./evolution-server');
 const webhookPort = Number(process.env.WEBHOOK_PORT || 3001);
 const autoReplyEnabled = process.env.AUTO_REPLY_ENABLED !== 'false';
 const geminiApiKey = process.env.GEMINI_API_KEY;
-const geminiModel = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
+const geminiModel = process.env.GEMINI_MODEL || 'gemini-3.6-flash';
 const storePublicUrl = (process.env.STORE_PUBLIC_URL || '').replace(/\/+$/, '');
 const storeRestaurantId = process.env.STORE_RESTAURANT_ID || '';
 
