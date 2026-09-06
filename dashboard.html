@@ -54,7 +54,7 @@
     <div class="drawer-brand"><img class="drawer-logo" src="https://lbzhvqdtusfhtfhqacdu.supabase.co/storage/v1/object/public/Venua/ChatGPT%20Image%204%20de%20set.%20de%202026,%2015_17_41.png" alt="Icone da empresa"></div>
     <nav class="drawer-nav" aria-label="Funcoes do painel">
       <p class="drawer-section-title">Funcoes</p>
-      <a class="drawer-link drawer-link--active" href="dashboard.html">Dashboard</a>
+      <a class="drawer-link drawer-link--active" href="dashboard.html" data-dashboard-link>Dashboard</a>
       <a class="drawer-link" href="index.html?view=connections">Automatic Bot</a>
     </nav>
   </aside>
@@ -74,6 +74,7 @@
     menuButton.addEventListener('click', () => setDrawerState(true));
     drawerBackdrop.addEventListener('click', () => setDrawerState(false));
     document.querySelectorAll('.drawer-link').forEach((link) => link.addEventListener('click', () => setDrawerState(false)));
+    document.querySelectorAll('[data-dashboard-link]').forEach((link) => link.addEventListener('click', (event) => { event.preventDefault(); setDrawerState(false); window.location.assign(link.getAttribute('href')); }));
     function renderChart(dailyRevenue) {
       const days = Object.keys(dailyRevenue).sort();
       const labels = days.length ? days.map((day) => day.slice(8,10)) : ['Sem dados'];
