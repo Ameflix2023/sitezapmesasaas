@@ -73,6 +73,7 @@
     function setDrawerState(open) { document.body.classList.toggle('drawer-open', open); menuButton.setAttribute('aria-expanded', String(open)); }
     menuButton.addEventListener('click', () => setDrawerState(true));
     drawerBackdrop.addEventListener('click', () => setDrawerState(false));
+    document.querySelectorAll('.drawer-link').forEach((link) => link.addEventListener('click', () => setDrawerState(false)));
     function renderChart(dailyRevenue) {
       const days = Object.keys(dailyRevenue).sort();
       const labels = days.length ? days.map((day) => day.slice(8,10)) : ['Sem dados'];

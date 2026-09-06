@@ -44,6 +44,9 @@ function setDrawerState(isOpen) {
 
 drawerOpenButton.addEventListener('click', () => setDrawerState(true));
 drawerCloseButtons.forEach((button) => button.addEventListener('click', () => setDrawerState(false)));
+document.querySelectorAll('.drawer-link').forEach((link) => {
+  link.addEventListener('click', () => setDrawerState(false));
+});
 
 drawer.addEventListener('pointerdown', (event) => {
   if (!document.body.classList.contains('drawer-open')) return;
