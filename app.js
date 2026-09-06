@@ -47,13 +47,6 @@ drawerCloseButtons.forEach((button) => button.addEventListener('click', () => se
 document.querySelectorAll('.drawer-link').forEach((link) => {
   link.addEventListener('click', () => setDrawerState(false));
 });
-document.querySelectorAll('[data-dashboard-link]').forEach((link) => {
-  link.addEventListener('click', (event) => {
-    event.preventDefault();
-    setDrawerState(false);
-    window.location.assign(link.getAttribute('href'));
-  });
-});
 
 drawer.addEventListener('pointerdown', (event) => {
   if (!document.body.classList.contains('drawer-open')) return;
