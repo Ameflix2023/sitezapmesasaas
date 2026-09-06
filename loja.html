@@ -10,7 +10,6 @@
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
     body { font-family: 'Plus Jakarta Sans', sans-serif; background: #0b0f17; }
     .glass-card { background: rgba(17, 24, 39, .75); backdrop-filter: blur(8px); border: 1px solid rgba(255, 255, 255, .08); }
-    .store-content { width: min(100% - 32px, 720px); margin: 0 auto; }
     .store-header-inner { min-height: 84px; }
     .category-scroll { scrollbar-width: none; }
     .category-scroll::-webkit-scrollbar { display: none; }
@@ -18,10 +17,8 @@
     .product-card-image { width: 92px; height: 92px; object-fit: cover; }
     .product-card-copy { min-width: 0; }
     .product-card-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .cart-bar-inner { width: min(100% - 32px, 720px); margin: 0 auto; }
     .modal-panel { max-height: calc(100vh - 32px); overflow-y: auto; }
     @media (max-width: 520px) {
-      .store-content, .cart-bar-inner { width: min(100% - 24px, 720px); }
       .product-card { grid-template-columns: 72px minmax(0, 1fr) auto; gap: 12px; min-height: 104px; }
       .product-card-image { width: 72px; height: 72px; }
       .product-card button { padding: 10px; }
@@ -34,7 +31,7 @@
 </head>
 <body class="text-slate-100 antialiased min-h-screen pb-28">
   <header class="sticky top-0 z-30 bg-slate-900/90 backdrop-blur-md border-b border-slate-800">
-    <div class="store-content store-header-inner px-0 flex items-center justify-between">
+    <div class="max-w-2xl mx-auto px-4 store-header-inner flex items-center justify-between">
       <div class="flex items-center space-x-3">
         <div class="w-10 h-10 rounded-2xl overflow-hidden border border-rose-500/20 bg-slate-950 flex items-center justify-center shadow-lg shadow-rose-500/10"><img src="https://lbzhvqdtusfhtfhqacdu.supabase.co/storage/v1/object/public/Venua/file_00000000699c8230a655bbe6b66f03fc.png" alt="Logo" class="w-full h-full object-cover"></div>
         <div><h1 id="store-name" class="text-sm font-black text-white">Carregando...</h1><p class="text-[10px] text-slate-400">Faca seu pedido online</p></div>
@@ -43,14 +40,14 @@
     </div>
   </header>
 
-  <main id="store-container" class="store-content py-6 space-y-6">
-    <div id="categories-filter" class="category-scroll flex gap-2 overflow-x-auto pb-2"></div>
-    <div id="products-grid" class="grid grid-cols-1 gap-3" aria-live="polite"><div class="text-center py-20 text-slate-500 font-bold text-sm">Carregando cardapio...</div></div>
+  <main id="store-container" class="max-w-2xl mx-auto px-4 py-6 space-y-6 text-left">
+    <div id="categories-filter" class="category-scroll flex flex-nowrap justify-start gap-2 overflow-x-auto pb-2 text-left"></div>
+    <div id="products-grid" class="grid grid-cols-1 gap-4 w-full text-left" aria-live="polite"><div class="text-center py-20 text-slate-500 font-bold text-sm">Carregando cardapio...</div></div>
   </main>
 
-  <div id="cart-bar" class="fixed bottom-0 left-0 right-0 p-4 bg-slate-900/95 backdrop-blur-lg border-t border-slate-800 z-40 hidden"><div class="cart-bar-inner flex items-center justify-between gap-4"><div><span id="cart-count" class="text-[10px] bg-rose-500 text-white px-2 py-0.5 rounded-full font-bold">0 itens</span><p id="cart-total" class="text-sm font-black text-white mt-0.5">R$ 0,00</p></div><button type="button" data-open-cart class="shrink-0 bg-emerald-600 hover:bg-emerald-500 text-white px-5 py-3 rounded-2xl text-xs font-extrabold shadow-lg shadow-emerald-600/30 flex items-center space-x-2 transition"><i data-lucide="shopping-bag" class="w-4 h-4"></i><span>Ver Sacola</span></button></div></div>
+  <div id="cart-bar" class="fixed inset-x-0 bottom-0 z-40 hidden border-t border-slate-800 bg-slate-900/95 p-4 text-left backdrop-blur-lg"><div class="max-w-2xl mx-auto px-0 flex items-center justify-between gap-4"><div><span id="cart-count" class="text-[10px] bg-rose-500 text-white px-2 py-0.5 rounded-full font-bold">0 itens</span><p id="cart-total" class="text-sm font-black text-white mt-0.5">R$ 0,00</p></div><button type="button" data-open-cart class="shrink-0 bg-emerald-600 hover:bg-emerald-500 text-white px-5 py-3 rounded-2xl text-xs font-extrabold shadow-lg shadow-emerald-600/30 flex items-center space-x-2 transition"><i data-lucide="shopping-bag" class="w-4 h-4"></i><span>Ver Sacola</span></button></div></div>
 
-  <div id="checkout-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden items-center justify-center p-4"><div class="modal-panel glass-card w-full max-w-md rounded-3xl p-6 space-y-5 relative"><div class="flex items-center justify-between border-b border-slate-800 pb-3"><h2 class="font-extrabold text-sm text-white">Sua Sacola de Pedidos</h2><button type="button" data-close-cart aria-label="Fechar sacola" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button></div><div id="modal-cart-items" class="max-h-48 overflow-y-auto space-y-2 pr-1"></div><div class="space-y-3 pt-2 border-t border-slate-800"><div><label for="client-name" class="block text-xs font-extrabold text-slate-300 mb-1">Seu Nome</label><input id="client-name" type="text" placeholder="Ex: Joao Silva" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none"></div><div><label for="client-address" class="block text-xs font-extrabold text-slate-300 mb-1">Endereco de Entrega</label><textarea id="client-address" rows="2" placeholder="Rua, numero, bairro..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none"></textarea></div></div><button type="button" data-send-order class="w-full bg-emerald-600 hover:bg-emerald-500 text-white py-3.5 rounded-2xl text-xs font-extrabold shadow-lg flex items-center justify-center space-x-2"><i data-lucide="send" class="w-4 h-4"></i><span>Enviar Pedido via WhatsApp</span></button></div></div>
+  <div id="checkout-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/80 p-4 text-left backdrop-blur-sm"><div class="modal-panel glass-card w-full max-w-md rounded-3xl p-6 space-y-5 relative text-left"><div class="flex items-center justify-between border-b border-slate-800 pb-3"><h2 class="font-extrabold text-sm text-white">Sua Sacola de Pedidos</h2><button type="button" data-close-cart aria-label="Fechar sacola" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button></div><div id="modal-cart-items" class="max-h-48 overflow-y-auto space-y-2 pr-1"></div><div class="space-y-3 pt-2 border-t border-slate-800"><div><label for="client-name" class="block text-xs font-extrabold text-slate-300 mb-1">Seu Nome</label><input id="client-name" type="text" placeholder="Ex: Joao Silva" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none"></div><div><label for="client-address" class="block text-xs font-extrabold text-slate-300 mb-1">Endereco de Entrega</label><textarea id="client-address" rows="2" placeholder="Rua, numero, bairro..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none"></textarea></div></div><button type="button" data-send-order class="w-full bg-emerald-600 hover:bg-emerald-500 text-white py-3.5 rounded-2xl text-xs font-extrabold shadow-lg flex items-center justify-center space-x-2"><i data-lucide="send" class="w-4 h-4"></i><span>Enviar Pedido via WhatsApp</span></button></div></div>
 
   <script>
     const restaurantId = new URLSearchParams(window.location.search).get('restaurant');
