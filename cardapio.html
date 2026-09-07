@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cardapio | ZapMesa</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root { --bg:#020d15; --surface:#071c29; --line:#173447; --text:#f2f7fb; --muted:#8da3b4; --green:#00df91; --danger:#ff7078; }
+    * { box-sizing:border-box; } body { min-width:320px; margin:0; color:var(--text); background:var(--bg); font-family:"DM Sans",sans-serif; } button,input,textarea { font:inherit; } button { cursor:pointer; }
+    .page { width:min(100% - 32px,1120px); margin:auto; padding:28px 0 56px; } .topbar { display:flex; align-items:center; justify-content:space-between; gap:18px; margin-bottom:28px; } .brand { display:flex; align-items:center; gap:10px; color:var(--text); text-decoration:none; font:700 21px "Space Grotesk",sans-serif; } .brand img { width:36px; height:36px; border:2px solid var(--green); border-radius:50%; object-fit:contain; } .back { color:var(--muted); font-size:12px; text-decoration:none; } h1,h2 { margin:0; font-family:"Space Grotesk",sans-serif; } h1 { font-size:28px; } .intro { margin-bottom:20px; } .intro p { margin:6px 0 0; color:var(--muted); font-size:13px; }
+    .layout { display:grid; grid-template-columns:minmax(280px,360px) minmax(0,1fr); gap:16px; align-items:start; } .panel { padding:20px; border:1px solid var(--line); border-radius:9px; background:linear-gradient(145deg,#071c29,#061620); } .panel h2 { margin-bottom:18px; font-size:16px; } .field { display:block; margin-bottom:13px; } .field span { display:block; margin-bottom:6px; color:#c4d4dd; font-size:11px; font-weight:600; } .field input,.field textarea { width:100%; padding:10px 11px; border:1px solid var(--line); border-radius:6px; outline:0; color:var(--text); background:#04131d; font-size:12px; } .field textarea { min-height:72px; resize:vertical; } .field input:focus,.field textarea:focus { border-color:var(--green); box-shadow:0 0 0 3px rgba(0,223,145,.12); } .submit { width:100%; padding:11px; border:0; border-radius:6px; color:#001b16; background:var(--green); font-size:12px; font-weight:700; } .submit:disabled { cursor:wait; opacity:.6; } .message { min-height:18px; margin:12px 0 0; color:var(--green); font-size:11px; } .message.error { color:var(--danger); }
+    .products-heading { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:14px; } .products-heading h2 { margin:0; } .count { color:var(--muted); font-size:11px; } .products { display:grid; gap:9px; } .product { display:grid; grid-template-columns:58px minmax(0,1fr) auto; gap:12px; align-items:center; padding:10px; border:1px solid var(--line); border-radius:7px; background:#061722; } .product img { width:58px; height:58px; border-radius:6px; object-fit:cover; background:#0b2635; } .product h3 { margin:0 0 4px; color:#eaf3f7; font-size:12px; } .product p { margin:0; color:var(--muted); font-size:10px; } .product-price { margin-top:5px !important; color:var(--green) !important; font-weight:700; } .empty { padding:34px 10px; color:var(--muted); text-align:center; font-size:12px; }
+    @media(max-width:760px) { .page { width:min(100% - 24px,1120px); padding-top:18px; } .layout { grid-template-columns:1fr; } .topbar { margin-bottom:20px; } }
+    html { overflow-x:hidden; } body { overflow-x:hidden; } img { max-width:100%; } .topbar,.products-heading,.product { min-width:0; } .back { white-space:nowrap; } .product h3,.product p { overflow-wrap:anywhere; }
+    @media(max-width:520px) { .page { width:calc(100% - 20px); padding:14px 0 32px; } .topbar { align-items:flex-start; margin-bottom:18px; } .brand { font-size:17px; } .brand img { width:30px; height:30px; } .back { font-size:10px; text-align:right; white-space:normal; } .panel { padding:14px; } .product { grid-template-columns:50px minmax(0,1fr); gap:9px; } .product img { width:50px; height:50px; } .product > div:last-child { grid-column:2; } }
+    @media(max-width:360px) { .topbar { flex-direction:column; gap:10px; } .back { align-self:flex-start; text-align:left; } .product { grid-template-columns:44px minmax(0,1fr); } .product img { width:44px; height:44px; } }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="topbar"><a class="brand" href="dashboard.html"><img src="https://lbzhvqdtusfhtfhqacdu.supabase.co/storage/v1/object/public/Venua/file_00000000699c8230a655bbe6b66f03fc.png" alt="Logo ZapMesa"><span>ZapMesa</span></a><a class="back" href="dashboard.html">Voltar ao dashboard</a></header>
+    <section class="intro"><h1 id="restaurant-name">Cardapio</h1><p>Adicione e organize os produtos do seu restaurante.</p></section>
+    <section class="layout">
+      <form id="product-form" class="panel">
+        <h2>Novo produto</h2>
+        <label class="field"><span>Nome do produto *</span><input name="name" required maxlength="120" placeholder="Ex: X-Tudo"></label>
+        <label class="field"><span>Descricao</span><textarea name="description" maxlength="300" placeholder="Ingredientes ou detalhes do produto"></textarea></label>
+        <label class="field"><span>Preco *</span><input name="price" required type="number" min="0" step="0.01" placeholder="0,00"></label>
+        <label class="field"><span>Categoria</span><input name="category" maxlength="60" placeholder="Ex: Lanches"></label>
+        <label class="field"><span>URL da imagem</span><input name="image" type="url" maxlength="500" placeholder="https://..."></label>
+        <button class="submit" type="submit">Salvar produto no Firebase</button>
+        <p id="form-message" class="message" role="status"></p>
+      </form>
+      <section class="panel"><div class="products-heading"><h2>Produtos cadastrados</h2><span id="product-count" class="count">0 produtos</span></div><div id="products" class="products"><div class="empty">Carregando produtos...</div></div></section>
+    </section>
+  </main>
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const restaurantId = params.get('restaurant') || localStorage.getItem('zapmesa-restaurant-id') || '';
+    const fallbackImage = 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=300&q=80';
+    const money = (value) => Number(value || 0).toLocaleString('pt-BR', { style:'currency', currency:'BRL' });
+    const escapeHtml = (value) => String(value || '').replace(/[&<>"']/g, (char) => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#039;' }[char]));
+    const productsElement = document.querySelector('#products');
+    const messageElement = document.querySelector('#form-message');
+    function renderProducts(products) {
+      document.querySelector('#product-count').textContent = `${products.length} ${products.length === 1 ? 'produto' : 'produtos'}`;
+      productsElement.innerHTML = products.length ? products.map((product) => `<article class="product"><img src="${escapeHtml(product.image || fallbackImage)}" alt="${escapeHtml(product.name)}"><div><h3>${escapeHtml(product.name)}</h3><p>${escapeHtml(product.category || 'Geral')} · ${escapeHtml(product.description || 'Sem descricao')}</p><p class="product-price">${money(product.price)}</p></div></article>`).join('') : '<div class="empty">Nenhum produto cadastrado ainda.</div>';
+    }
+    async function loadProducts() {
+      if (!restaurantId) { productsElement.innerHTML = '<div class="empty">Informe o restaurante na URL ou configure STORE_RESTAURANT_ID.</div>'; return; }
+      localStorage.setItem('zapmesa-restaurant-id', restaurantId);
+      const response = await fetch(`/api/store?restaurant=${encodeURIComponent(restaurantId)}`);
+      const result = await response.json();
+      if (!response.ok || !result.ok) throw new Error(result.error || 'Nao foi possivel carregar os produtos.');
+      document.querySelector('#restaurant-name').textContent = result.restaurantName || 'Cardapio';
+      renderProducts(result.products || []);
+    }
+    document.querySelector('#product-form').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      messageElement.className = 'message'; messageElement.textContent = '';
+      if (!restaurantId) { messageElement.classList.add('error'); messageElement.textContent = 'Informe o restaurante antes de salvar.'; return; }
+      const form = event.currentTarget; const formData = new FormData(form); const button = form.querySelector('button'); button.disabled = true; button.textContent = 'Salvando...';
+      try {
+        const response = await fetch('/api/products', { method:'POST', headers:{ 'Content-Type':'application/json' }, body:JSON.stringify({ restaurantId, name:formData.get('name'), description:formData.get('description'), price:formData.get('price'), category:formData.get('category'), image:formData.get('image') }) });
+        const result = await response.json(); if (!response.ok || !result.ok) throw new Error(result.error || 'Nao foi possivel salvar o produto.');
+        form.reset(); messageElement.textContent = 'Produto salvo no Firebase.'; await loadProducts();
+      } catch (error) { messageElement.classList.add('error'); messageElement.textContent = error.message; } finally { button.disabled = false; button.textContent = 'Salvar produto no Firebase'; }
+    });
+    loadProducts().catch((error) => { productsElement.innerHTML = `<div class="empty">${escapeHtml(error.message)}</div>`; });
+  </script>
+</body>
+</html>

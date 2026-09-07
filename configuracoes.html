@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Configuracoes | ZapMesa</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root { --bg:#020d15; --surface:#071c29; --line:#173447; --text:#f2f7fb; --muted:#8da3b4; --green:#00df91; --danger:#ff7078; }
+    * { box-sizing:border-box; } body { min-width:320px; margin:0; color:var(--text); background:var(--bg); font-family:"DM Sans",sans-serif; } button,input,textarea { font:inherit; } button { cursor:pointer; }
+    .page { width:min(100% - 32px,900px); margin:auto; padding:28px 0 56px; } .topbar { display:flex; align-items:center; justify-content:space-between; gap:18px; margin-bottom:28px; } .brand { display:flex; align-items:center; gap:10px; color:var(--text); text-decoration:none; font:700 21px "Space Grotesk",sans-serif; } .brand img { width:36px; height:36px; border:2px solid var(--green); border-radius:50%; object-fit:contain; } .back { color:var(--muted); font-size:12px; text-decoration:none; } h1,h2 { margin:0; font-family:"Space Grotesk",sans-serif; } h1 { font-size:28px; } .intro { margin-bottom:20px; } .intro p { margin:6px 0 0; color:var(--muted); font-size:13px; }
+    .panel { max-width:620px; padding:22px; border:1px solid var(--line); border-radius:9px; background:linear-gradient(145deg,#071c29,#061620); } .panel h2 { margin-bottom:18px; font-size:17px; } .fields { display:grid; grid-template-columns:1fr 1fr; gap:14px; } .field { display:block; } .field-wide { grid-column:1 / -1; } .field span { display:block; margin-bottom:6px; color:#c4d4dd; font-size:11px; font-weight:600; } .field input,.field textarea { width:100%; padding:10px 11px; border:1px solid var(--line); border-radius:6px; outline:0; color:var(--text); background:#04131d; font-size:12px; } .field textarea { min-height:82px; resize:vertical; } .field input:focus,.field textarea:focus { border-color:var(--green); box-shadow:0 0 0 3px rgba(0,223,145,.12); } .actions { display:flex; align-items:center; gap:14px; margin-top:20px; } .submit { padding:11px 18px; border:0; border-radius:6px; color:#001b16; background:var(--green); font-size:12px; font-weight:700; } .submit:disabled { cursor:wait; opacity:.6; } .message { min-height:18px; margin:0; color:var(--green); font-size:11px; } .message.error { color:var(--danger); }
+    @media(max-width:600px) { .page { width:min(100% - 24px,900px); padding-top:18px; } .fields { grid-template-columns:1fr; } .field-wide { grid-column:auto; } .topbar { margin-bottom:20px; } .actions { align-items:flex-start; flex-direction:column; } }
+    html { overflow-x:hidden; } body { overflow-x:hidden; } .topbar,.panel { min-width:0; } .field input,.field textarea { max-width:100%; }
+    @media(max-width:420px) { .page { width:calc(100% - 20px); padding:14px 0 32px; } .topbar { align-items:flex-start; flex-direction:column; gap:10px; margin-bottom:18px; } .brand { font-size:17px; } .brand img { width:30px; height:30px; } .back { font-size:11px; } .panel { padding:14px; } h1 { font-size:24px; } }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="topbar"><a class="brand" href="dashboard.html"><img src="https://lbzhvqdtusfhtfhqacdu.supabase.co/storage/v1/object/public/Venua/file_00000000699c8230a655bbe6b66f03fc.png" alt="Logo ZapMesa"><span>ZapMesa</span></a><a class="back" href="dashboard.html">Voltar ao dashboard</a></header>
+    <section class="intro"><h1>Configuracoes de perfil</h1><p>Atualize as informacoes exibidas para os clientes do restaurante.</p></section>
+    <form id="profile-form" class="panel">
+      <h2>Dados do restaurante</h2>
+      <div class="fields">
+        <label class="field"><span>Nome do restaurante *</span><input name="name" required maxlength="120" placeholder="Ex: Sabor do Chef"></label>
+        <label class="field"><span>WhatsApp</span><input name="whatsapp" maxlength="30" placeholder="+55 (00) 00000-0000"></label>
+        <label class="field field-wide"><span>Endereco</span><input name="address" maxlength="300" placeholder="Rua, numero, bairro e cidade"></label>
+        <label class="field field-wide"><span>Descricao</span><textarea name="description" maxlength="300" placeholder="Uma breve descricao do restaurante"></textarea></label>
+      </div>
+      <div class="actions"><button class="submit" type="submit">Salvar configuracoes</button><p id="form-message" class="message" role="status"></p></div>
+    </form>
+  </main>
+  <script>
+    const restaurantId = new URLSearchParams(window.location.search).get('restaurant') || localStorage.getItem('zapmesa-restaurant-id') || '';
+    const form = document.querySelector('#profile-form');
+    const message = document.querySelector('#form-message');
+    function setMessage(text, isError = false) { message.textContent = text; message.className = `message${isError ? ' error' : ''}`; }
+    async function loadProfile() {
+      if (!restaurantId) { setMessage('Informe o restaurante no dashboard antes de editar o perfil.', true); return; }
+      const response = await fetch(`/api/profile?restaurant=${encodeURIComponent(restaurantId)}`); const result = await response.json();
+      if (!response.ok || !result.ok) throw new Error(result.error || 'Nao foi possivel carregar o perfil.');
+      Object.entries(result.profile || {}).forEach(([key, value]) => { if (form.elements[key]) form.elements[key].value = value || ''; });
+    }
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault(); if (!restaurantId) { setMessage('Informe o restaurante antes de salvar.', true); return; }
+      const button = form.querySelector('button'); const data = Object.fromEntries(new FormData(form)); button.disabled = true; button.textContent = 'Salvando...'; setMessage('');
+      try { const response = await fetch('/api/profile', { method:'PATCH', headers:{ 'Content-Type':'application/json' }, body:JSON.stringify({ restaurantId, ...data }) }); const result = await response.json(); if (!response.ok || !result.ok) throw new Error(result.error || 'Nao foi possivel salvar.'); setMessage('Configuracoes salvas com sucesso.'); } catch (error) { setMessage(error.message, true); } finally { button.disabled = false; button.textContent = 'Salvar configuracoes'; }
+    });
+    loadProfile().catch((error) => setMessage(error.message, true));
+  </script>
+</body>
+</html>

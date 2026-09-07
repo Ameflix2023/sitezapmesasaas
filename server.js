@@ -9,9 +9,11 @@ const { createEvolutionInstance, getEvolutionInstanceState, deleteEvolutionInsta
 const port = Number(process.env.PORT || 3000);
 const defaultRestaurantId = process.env.STORE_RESTAURANT_ID || '';
 const publicFiles = {
-  '/': { file: 'index.html', type: 'text/html; charset=utf-8' },
+  '/': { file: 'dashboard.html', type: 'text/html; charset=utf-8' },
   '/index.html': { file: 'index.html', type: 'text/html; charset=utf-8' },
   '/loja.html': { file: 'loja.html', type: 'text/html; charset=utf-8' },
+  '/cardapio.html': { file: 'cardapio.html', type: 'text/html; charset=utf-8' },
+  '/configuracoes.html': { file: 'configuracoes.html', type: 'text/html; charset=utf-8' },
   '/dashboard.html': { file: 'dashboard.html', type: 'text/html; charset=utf-8' },
   '/styles.css': { file: 'styles.css', type: 'text/css; charset=utf-8' },
   '/app.js': { file: 'app.js', type: 'application/javascript; charset=utf-8' }
